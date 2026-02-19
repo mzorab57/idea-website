@@ -58,16 +58,16 @@ export default function CategoryStrip() {
         {/* 2. The Floating Cloud Panel (Subcategories) */}
         <div 
             className={`
-                absolute left-0 right-0 top-full mt-4 transition-all duration-500 ease-in-out
-                ${activeId ? 'opacity-100 translate-y-0 visible' : 'opacity-0 -translate-y-4 invisible pointer-events-none'}
+                absolute left-0 right-0 top-full mt-4 transition-all  duration-500 ease-in-out
+                ${activeId ? 'opacity-100 translate-y-0 visible ' : 'opacity-0 -translate-y-4  invisible pointer-events-none'}
             `}
             onMouseLeave={() => setActiveId(null)}
         >
-            <div className="mx-auto px-4 max-w-7xl">
-                <div className="relative overflow-hidden rounded-3xl bg-white/90 backdrop-blur-2xl shadow-[0_20px_50px_-12px_rgba(249,115,22,0.15)] border border-white ring-1 ring-orange-50">
+            <div className="mx-auto p-4  max-w-7xl">
+                <div className="relative overflow-hidden rounded-xl bg-white/40 backdrop-blur-3xl shadow-[0_20px_50px_-12px_rgba(249,115,22,0.15)]  ring-orange-50">
                     
                     {/* Decorative Top Gradient Line */}
-                    <div className="absolute top-0 border-b border-orange-300/50 inset-x-0 h-1 bg-gradient-to-r from-transparent via-orange-400 to-transparent opacity-60"></div>
+                    <div className="absolute top-0 border-b border-orange-600/50 inset-x-0 h-1 bg-gradient-to-r from-transparent via-orange-400 to-transparent opacity-60"></div>
 
                     <div className="p-8">
                         {/* Header of Panel */}
@@ -80,7 +80,7 @@ export default function CategoryStrip() {
                             </h3>
                             <button 
                                 onClick={() => navigate(`/books?category=${encodeURIComponent(activeCategory?.slug)}`)}
-                                className="text-xs font-medium text-slate-400 hover:text-orange-500 transition-colors bg-white px-3 py-1.5 rounded-lg border border-slate-100 shadow-sm"
+                                className="text-xs font-medium text-orange-500 hover:border-orange-500 transition-colors bg-white px-3 py-1.5 rounded-lg border border-slate-100 shadow-sm"
                             >
                                 بینینی هەموو کتێبەکان
                             </button>
@@ -94,13 +94,13 @@ export default function CategoryStrip() {
                                     onClick={() => navigate(`/books?subcategory=${encodeURIComponent(s.slug || s.name)}`)}
                                     style={{ transitionDelay: `${idx * 40}ms` }}
                                     className={`
-                                        group flex items-center justify-between p-3 rounded-2xl border border-transparent 
-                                        bg-slate-50/50 hover:bg-white hover:border-orange-200 hover:shadow-lg hover:shadow-orange-500/5 
+                                        group flex items-center justify-between p-3 rounded-lg border  
+                                        hover:bg-slate-50/50 bg-white/80 border-orange-200 hover:shadow-lg hover:shadow-orange-500/5 
                                         transition-all duration-300 transform hover:-translate-y-1
                                         ${activeId ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'}
                                     `}
                                 >
-                                    <span className="text-sm font-medium text-slate-600 group-hover:text-orange-600 transition-colors">
+                                    <span className="text-sm font-medium group-hover:text-slate-600 text-orange-600 transition-colors">
                                         {s.name}
                                     </span>
                                     <span className="h-6 w-6 rounded-full bg-white flex items-center justify-center text-orange-300 opacity-0 group-hover:opacity-100 transition-all shadow-sm">

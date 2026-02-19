@@ -372,8 +372,8 @@ export default function Home() {
       {/* ═════════════════════════════════════
           QUICK NAV — 4 tabs
       ═════════════════════════════════════ */}
-      <section className="bg-white border-b border-stone-100 sticky top-[74px] z-30">
-        <div className="mx-auto max-w-6xl px-4 sm:px-6">
+      <section className="   sticky top-[74px] z-30">
+        <div className="mx-auto max-w-[69rem] rounded-xl px-4 sm:px-6 bg-white">
           <div className="flex items-center gap-x-1 overflow-x-auto
                           scrollbar-thin scrollbar-thumb-stone-100
                           scrollbar-track-transparent -mb-px">
@@ -384,7 +384,7 @@ export default function Home() {
                   key={s.key}
                   href={`#${s.key}`}
                   className="group flex items-center gap-x-2 whitespace-nowrap
-                             px-4 py-3.5 border-b-2 border-transparent
+                             pl-4 py-3.5 border-b-2 border-transparent
                              text-[13px] font-medium text-stone-400
                              hover:text-stone-700 hover:border-stone-300
                              transition-all duration-200"
