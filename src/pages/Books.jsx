@@ -1,7 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 import { getBooks, getCategories, getAuthors } from '../services/public'
 import BookCard from '../components/books/BookCard.jsx'
-import Pagination from '../components/common/Pagination.jsx'
 import useQueryParam, { useQueryParams } from '../hooks/useQueryParam'
 import Seo from '../seo/Seo.jsx'
 import {
@@ -13,10 +12,7 @@ import {
   ChevronLeft,
   Layers,
   User,
-  Filter,
   Grid3X3,
-  LayoutGrid,
-  List,
 } from 'lucide-react'
 import { useState, useMemo } from 'react'
 
@@ -287,7 +283,8 @@ export default function Books() {
           MAIN CONTENT
       ═══════════════════════════════════ */}
       <div className="mx-auto max-w-7xl px-4 sm:px-6 py-8">
-        <div className="grid grid-cols-1 gap-8 lg:grid-cols-4">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+
 
           {/* ── SIDEBAR ── */}
           <aside className={[
@@ -515,11 +512,12 @@ export default function Books() {
 
             {/* loading */}
             {books.isLoading && (
-              <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3">
+              // CHANGED: Added grid-cols-2 for mobile
+              <div className="grid grid-cols-2 gap-3 sm:gap-5 sm:grid-cols-2 xl:grid-cols-3">
                 {Array.from({ length: 6 }).map((_, i) => (
                   <div key={i} className="animate-pulse rounded-2xl bg-white
                                           border border-stone-100 overflow-hidden">
-                    <div className="h-52 bg-stone-100" />
+                    <div className="h-40 sm:h-52 bg-stone-100" />
                     <div className="p-4 space-y-3">
                       <div className="h-4 w-3/4 rounded-full bg-stone-100" />
                       <div className="h-3 w-1/2 rounded-full bg-stone-50" />
@@ -574,7 +572,8 @@ export default function Books() {
                     )}
                   </div>
                 ) : (
-                  <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3">
+                  // CHANGED: grid-cols-2 and gap-3 for mobile
+                  <div className="grid grid-cols-2 gap-3 sm:gap-5 sm:grid-cols-2 xl:grid-cols-3">
                     {bookList.map((b) => (
                       <BookCard key={b.id} book={b} />
                     ))}

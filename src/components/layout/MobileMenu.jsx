@@ -1,4 +1,5 @@
 import { useEffect } from 'react'
+import { createPortal } from 'react-dom'
 import { X, ChevronDown, Home, Book, User, Info } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import useCategories from '../../hooks/useCategories'
@@ -6,7 +7,6 @@ import useCategories from '../../hooks/useCategories'
 export default function MobileMenu({ open, onClose }) {
   const { data: categories = [] } = useCategories() || {}
 
-  // ── Lock body scroll when menu is open ──
   useEffect(() => {
     if (open) {
       document.body.style.overflow = 'hidden'
@@ -15,7 +15,6 @@ export default function MobileMenu({ open, onClose }) {
       document.body.style.overflow = ''
       document.body.style.touchAction = ''
     }
-
     return () => {
       document.body.style.overflow = ''
       document.body.style.touchAction = ''
@@ -24,8 +23,10 @@ export default function MobileMenu({ open, onClose }) {
 
   if (!open) return null
 
-  return (
-    <div className="md:hidden fixed inset-0 z-[60]" dir="rtl">
+  /* ── createPortal بۆ ئەوەی لە body ڕێندەر بکرێت
+       نەک لەناو header کە backdrop-blur/sticky ی هەیە ── */
+  return createPortal(
+    <div className="md:hidden fixed inset-0 z-[9999]" dir="rtl">
       {/* Backdrop */}
       <div
         className="absolute inset-0 bg-slate-900/30 transition-opacity duration-300"
@@ -53,7 +54,7 @@ export default function MobileMenu({ open, onClose }) {
           </div>
         </div>
 
-        {/* Scrollable List — تەنها ئەم بەشە سکرۆڵ دەکات */}
+        {/* Scrollable List */}
         <div className="flex-1 overflow-y-auto overscroll-contain bg-red-50/50 p-4 space-y-2">
 
           <Link onClick={onClose} to="/"
@@ -127,6 +128,7 @@ export default function MobileMenu({ open, onClose }) {
 
         </div>
       </div>
-    </div>
+    </div>,
+    document.body   // ← ئێرە گرنگە — ڕاستەوخۆ لە body
   )
 }
