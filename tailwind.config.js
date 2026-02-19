@@ -5,7 +5,12 @@ export default {
     "./src/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
-    extend: {},
+    extend: {
+      fontFamily: {
+        sans: ['Inter', 'sans-serif'], // بۆ ئینگلیزی
+        kurdish: ['Rabar', 'NRT', 'sans-serif'], // فۆنتی کوردی (ناوی فۆنتەکەی خۆت بنووسە)
+      },
+    },
   },
   plugins: [],
 }
