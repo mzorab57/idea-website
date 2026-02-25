@@ -1,21 +1,36 @@
-import { useState } from 'react'
-import Button from '../ui/Button.jsx'
+import { useEffect, useState } from 'react'
+import { Search } from 'lucide-react'
 
-export default function SearchBar({ initial = '', onSearch, placeholder = 'Search books…' }) {
-  const [q, setQ] = useState(initial)
+export default function SearchBar({ initial = '', onSearch, placeholder = 'گەڕان...' }) {
+  const [value, setValue] = useState(initial)
+
+  useEffect(() => {
+    setValue(initial)
+  }, [initial])
+
+  const submit = () => {
+    if (typeof onSearch === 'function') onSearch(value.trim())
+  }
+
   return (
-    <div className="flex items-center gap-2">
+    <div dir="rtl" className="relative">
+      <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
       <input
-        value={q}
-        onChange={(e) => setQ(e.target.value)}
+        dir="ltr"
+        value={value}
+        onChange={(e) => setValue(e.target.value)}
         onKeyDown={(e) => {
-          if (e.key === 'Enter') onSearch(q)
+          if (e.key === 'Enter') submit()
         }}
-        className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-300"
         placeholder={placeholder}
+        className="w-full rounded-full border border-slate-300 bg-white px-9 py-2 text-sm text-slate-700 outline-none focus:border-orange-300 focus:ring-4 focus:ring-orange-100"
       />
-      <Button onClick={() => onSearch(q)}>Search</Button>
+      <button
+        onClick={submit}
+        className="absolute right-1 top-1/2 -translate-y-1/2 rounded-full bg-orange-600 text-white px-3 py-1 text-xs hover:bg-orange-500"
+      >
+        گەڕان
+      </button>
     </div>
   )
 }
-

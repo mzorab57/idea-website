@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
-import { getBooks, getCategories, getAuthors } from '../services/public'
+import { getBooks, getAuthors } from '../services/public'
 import BookCard from '../components/books/BookCard.jsx'
 import useQueryParam, { useQueryParams } from '../hooks/useQueryParam'
 import Seo from '../seo/Seo.jsx'
@@ -15,34 +15,33 @@ import {
   Grid3X3,
 } from 'lucide-react'
 import { useState, useMemo } from 'react'
+import useCategories from '../hooks/useCategories'
 
 export default function Books() {
   const [params, setParams] = useQueryParams()
-  const [search, setSearch] = useQueryParam('search', '')
-  const [subcategory, setSubcategory] = useQueryParam('subcategory', '')
-  const [category, setCategory] = useQueryParam('category', '')
+  const [q, setQ] = useQueryParam('q', '')
+  const [legacySearch, setLegacySearch] = useQueryParam('search', '')
 
   const page = Number(params.page || 1)
   const per_page = Number(params.per_page || 12)
   const category_id = params.category_id || ''
+  const subcategory_id = params.subcategory_id || ''
   const author_id = params.author_id || ''
 
-  const [searchInput, setSearchInput] = useState(search)
+  const effectiveQ = q || legacySearch
+  const [searchInput, setSearchInput] = useState(effectiveQ)
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [expandedCat, setExpandedCat] = useState(null)
 
-  const { data: categories = [] } = useQuery({
-    queryKey: ['categories'],
-    queryFn: getCategories,
-  })
+  const { data: categories = [] } = useCategories()
   const { data: authors = [] } = useQuery({
     queryKey: ['authors'],
     queryFn: getAuthors,
   })
   const books = useQuery({
-    queryKey: ['books', { page, per_page, category_id, author_id, search, subcategory, category }],
+    queryKey: ['books', { page, per_page, category_id, subcategory_id, author_id, q: effectiveQ }],
     queryFn: () =>
-      getBooks({ page, per_page, category_id, author_id, search, subcategory, category }),
+      getBooks({ page, per_page, category_id, subcategory_id, author_id, q: effectiveQ }),
   })
 
   const totalPages = Number(books.data?.meta?.total_pages || 10)
@@ -52,48 +51,38 @@ export default function Books() {
   /* active filters count */
   const activeFilters = useMemo(() => {
     let count = 0
-    if (search) count++
-    if (category) count++
-    if (subcategory) count++
+    if (effectiveQ) count++
     if (category_id) count++
+    if (subcategory_id) count++
     if (author_id) count++
     return count
-  }, [search, category, subcategory, category_id, author_id])
+  }, [effectiveQ, category_id, subcategory_id, author_id])
 
   const clearAll = () => {
-    setSearch('')
     setSearchInput('')
-    setSubcategory('')
-    setCategory('')
-    setParams({ page: 1, category_id: '', author_id: '' })
+    setQ('')
+    setLegacySearch('')
+    setParams({ page: 1, category_id: '', subcategory_id: '', author_id: '' })
     setExpandedCat(null)
   }
 
   /* find active category name */
   const activeCatName = useMemo(() => {
-    if (category) {
-      const c = categories.find(
-        (cat) => cat.slug === category || cat.name === category
-      )
-      return c?.name || category
-    }
     if (category_id) {
       const c = categories.find((cat) => String(cat.id) === String(category_id))
       return c?.name || ''
     }
     return ''
-  }, [category, category_id, categories])
+  }, [category_id, categories])
 
   const activeSubName = useMemo(() => {
-    if (!subcategory) return ''
+    if (!subcategory_id) return ''
     for (const c of categories) {
-      const sub = (c.subcategories || []).find(
-        (s) => s.slug === subcategory || s.name === subcategory
-      )
+      const sub = (c.subcategories || []).find((s) => String(s.id) === String(subcategory_id))
       if (sub) return sub.name
     }
-    return subcategory
-  }, [subcategory, categories])
+    return ''
+  }, [subcategory_id, categories])
 
   return (
     <div dir="rtl" className="min-h-screen bg-[#fafaf9]">
@@ -141,8 +130,9 @@ export default function Books() {
                 onChange={(e) => setSearchInput(e.target.value)}
                 onKeyDown={(e) => {
                   if (e.key === 'Enter') {
-                    setSearch(searchInput)
-                    setParams({ page: 1 })
+                    setQ(searchInput)
+                    setLegacySearch('')
+                    setParams({ page: 1, subcategory_id: '' })
                   }
                 }}
                 placeholder="گەڕان بۆ کتێب..."
@@ -157,7 +147,8 @@ export default function Books() {
                 <button
                   onClick={() => {
                     setSearchInput('')
-                    setSearch('')
+                    setQ('')
+                    setLegacySearch('')
                     setParams({ page: 1 })
                   }}
                   className="absolute left-3 top-1/2 -translate-y-1/2
@@ -174,12 +165,12 @@ export default function Books() {
             <div className="flex items-center gap-2 mt-4 flex-wrap">
               <span className="text-[11px] text-stone-400">فلتەرەکان:</span>
 
-              {search && (
+              {effectiveQ && (
                 <span className="inline-flex items-center gap-x-1.5 rounded-full
                                  bg-orange-50 border border-orange-200
                                  px-3 py-1 text-[11px] font-medium text-orange-700">
-                  "{search}"
-                  <button onClick={() => { setSearch(''); setSearchInput(''); setParams({ page: 1 }) }}>
+                  "{effectiveQ}"
+                  <button onClick={() => { setQ(''); setLegacySearch(''); setSearchInput(''); setParams({ page: 1 }) }}>
                     <X size={11} />
                   </button>
                 </span>
@@ -192,9 +183,7 @@ export default function Books() {
                   <Layers size={10} />
                   {activeCatName}
                   <button onClick={() => {
-                    setCategory('')
-                    setSubcategory('')
-                    setParams({ category_id: '', page: 1 })
+                    setParams({ category_id: '', subcategory_id: '', page: 1 })
                     setExpandedCat(null)
                   }}>
                     <X size={11} />
@@ -208,7 +197,7 @@ export default function Books() {
                                  px-3 py-1 text-[11px] font-medium text-amber-700">
                   <Grid3X3 size={10} />
                   {activeSubName}
-                  <button onClick={() => { setSubcategory(''); setParams({ page: 1 }) }}>
+                  <button onClick={() => { setParams({ subcategory_id: '', page: 1 }) }}>
                     <X size={11} />
                   </button>
                 </span>
@@ -252,8 +241,9 @@ export default function Books() {
             onChange={(e) => setSearchInput(e.target.value)}
             onKeyDown={(e) => {
               if (e.key === 'Enter') {
-                setSearch(searchInput)
-                setParams({ page: 1 })
+                setQ(searchInput)
+                setLegacySearch('')
+                setParams({ page: 1, subcategory_id: '' })
               }
             }}
             placeholder="گەڕان..."
@@ -303,12 +293,10 @@ export default function Books() {
                       پۆل و ژێرپۆل
                     </span>
                   </div>
-                  {(category || category_id || subcategory) && (
+                  {(category_id || subcategory_id) && (
                     <button
                       onClick={() => {
-                        setCategory('')
-                        setSubcategory('')
-                        setParams({ category_id: '', page: 1 })
+                        setParams({ category_id: '', subcategory_id: '', page: 1 })
                         setExpandedCat(null)
                       }}
                       className="text-[10px] text-stone-400 hover:text-red-500
@@ -325,7 +313,6 @@ export default function Books() {
                   {(categories || []).map((c) => {
                     const isExpanded = expandedCat === c.id
                     const isActive =
-                      category === (c.slug || c.name) ||
                       String(category_id) === String(c.id)
                     const subs = c.subcategories || []
 
@@ -335,9 +322,7 @@ export default function Books() {
                         <div className="flex items-center">
                           <button
                             onClick={() => {
-                              setCategory(c.slug || c.name)
-                              setSubcategory('')
-                              setParams({ category_id: '', page: 1 })
+                              setParams({ category_id: c.id, subcategory_id: '', page: 1 })
                               setExpandedCat(isExpanded ? null : c.id)
                             }}
                             className={[
@@ -391,13 +376,12 @@ export default function Books() {
                                           px-4 py-2 space-y-0.5">
                             {subs.map((s) => {
                               const isSubActive =
-                                subcategory === (s.slug || s.name)
+                                String(subcategory_id) === String(s.id)
                               return (
                                 <button
                                   key={s.id}
                                   onClick={() => {
-                                    setSubcategory(s.slug || s.name)
-                                    setParams({ page: 1 })
+                                    setParams({ category_id: c.id, subcategory_id: s.id, page: 1 })
                                   }}
                                   className={[
                                     'flex items-center gap-x-2 w-full rounded-lg',

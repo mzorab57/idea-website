@@ -86,7 +86,13 @@ export default function MobileMenu({ open, onClose }) {
                                       px-4 py-3.5 text-slate-600 font-medium
                                       hover:bg-orange-50/50 hover:text-orange-600
                                       transition-colors">
-                    <span className="text-sm">{c.name}</span>
+                    <Link
+                      to={`/books?category_id=${encodeURIComponent(c.id)}`}
+                      onClick={onClose}
+                      className="text-sm"
+                    >
+                      {c.name}
+                    </Link>
                     <ChevronDown size={16}
                       className="text-slate-300 transition-transform
                                  group-open:rotate-180 group-open:text-orange-500" />
@@ -95,7 +101,7 @@ export default function MobileMenu({ open, onClose }) {
                     {(c.subcategories || []).map((s) => (
                       <Link
                         key={s.id}
-                        to={`/books?subcategory=${encodeURIComponent(s.slug || s.name)}`}
+                        to={`/books?category_id=${encodeURIComponent(c.id)}&subcategory_id=${encodeURIComponent(s.id)}`}
                         onClick={onClose}
                         className="flex items-center gap-2 rounded-lg px-3 py-2
                                    text-sm text-slate-500 hover:bg-white

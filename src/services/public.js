@@ -1,7 +1,12 @@
 import client from '../api/client'
 
 export function getBooks(params = {}) {
-  return client.get('/books', { params }).then((r) => {
+  const p = { ...(params || {}) }
+  if (p.q == null && p.search != null) p.q = p.search
+  delete p.search
+  if (p.limit == null && p.per_page != null) p.limit = p.per_page
+  delete p.per_page
+  return client.get('/books', { params: p }).then((r) => {
     const res = r.data
     if (Array.isArray(res)) return { data: res, meta: {} }
     if (Array.isArray(res?.items)) {

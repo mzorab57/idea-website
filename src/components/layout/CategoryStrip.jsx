@@ -6,13 +6,14 @@ import { Sparkles, CornerDownLeft, ArrowLeft } from 'lucide-react'
 export default function CategoryStrip() {
   const { data: categories = [] } = useCategories() || {}
   const [activeId, setActiveId] = useState(null)
+  
   const navigate = useNavigate()
 
   const activeCategory = categories.find((c) => String(c.id) === String(activeId))
   const activeSubs = activeCategory?.subcategories || []
 
   return (
-    <div className="relative hidden md:block z-30 my-6" dir="rtl">
+    <div className="relative hidden md:block z-30 my-6 " dir="rtl">
       <div className="mx-auto max-w-7xl px-4">
         
         {/* 1. Main Floating Bar */}
@@ -35,7 +36,7 @@ export default function CategoryStrip() {
                             key={c.id}
                             onMouseEnter={() => setActiveId(c.id)}
                             onFocus={() => setActiveId(c.id)}
-                            onClick={() => navigate(`/books?category=${encodeURIComponent(c.slug || c.name)}`)}
+                            onClick={() => navigate(`/books?category_id=${encodeURIComponent(c.id)}`)}
                             className={`
                                 group relative whitespace-nowrap rounded-full px-6 py-2.5 text-sm font-bold transition-all duration-500 ease-out
                                 ${isActive 
@@ -58,13 +59,14 @@ export default function CategoryStrip() {
         {/* 2. The Floating Cloud Panel (Subcategories) */}
         <div 
             className={`
-                absolute left-0 right-0 top-full mt-4 transition-all  duration-500 ease-in-out
+                absolute left-0 right-0  top-full mt-2 transition-all max-w-7xl mx-auto   duration-500 ease-in-out
                 ${activeId ? 'opacity-100 translate-y-0 visible ' : 'opacity-0 -translate-y-4  invisible pointer-events-none'}
             `}
             onMouseLeave={() => setActiveId(null)}
+           
         >
             <div className="mx-auto p-4  max-w-7xl">
-                <div className="relative overflow-hidden rounded-xl bg-white/40 backdrop-blur-3xl shadow-[0_20px_50px_-12px_rgba(249,115,22,0.15)]  ring-orange-50">
+                <div className="relative overflow-hidden border border-orange-400 rounded-xl bg-white/40 backdrop-blur-3xl shadow-[0_20px_50px_-12px_rgba(249,115,22,0.15)]  ring-orange-50">
                     
                     {/* Decorative Top Gradient Line */}
                     <div className="absolute top-0 border-b border-orange-600/50 inset-x-0 h-1 bg-gradient-to-r from-transparent via-orange-400 to-transparent opacity-60"></div>
@@ -79,7 +81,7 @@ export default function CategoryStrip() {
                                 بەشەکانی <span className="text-orange-500">{activeCategory?.name}</span>
                             </h3>
                             <button 
-                                onClick={() => navigate(`/books?category=${encodeURIComponent(activeCategory?.slug)}`)}
+                                onClick={() => navigate(`/books?category_id=${encodeURIComponent(activeCategory?.id)}`)}
                                 className="text-xs font-medium text-orange-500 hover:border-orange-500 transition-colors bg-white px-3 py-1.5 rounded-lg border border-slate-100 shadow-sm"
                             >
                                 بینینی هەموو کتێبەکان
@@ -91,7 +93,7 @@ export default function CategoryStrip() {
                             {(activeSubs || []).map((s, idx) => (
                                 <button
                                     key={s.id}
-                                    onClick={() => navigate(`/books?subcategory=${encodeURIComponent(s.slug || s.name)}`)}
+                                    onClick={() => navigate(`/books?category_id=${encodeURIComponent(activeCategory?.id)}&subcategory_id=${encodeURIComponent(s.id)}`)}
                                     style={{ transitionDelay: `${idx * 40}ms` }}
                                     className={`
                                         group flex items-center justify-between p-3 rounded-lg border  

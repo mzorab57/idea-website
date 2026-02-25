@@ -8,7 +8,7 @@ function cn(...i) {
   return twMerge(clsx(i))
 }
 
-export default function BookCard({ book, className }) {
+export default function BookCard({ book, className, categoryLabel }) {
   const title = book?.title || 'Untitled'
   const author =
     book?.author_names ||
@@ -22,7 +22,7 @@ export default function BookCard({ book, className }) {
     ''
   const coverPath = book?.thumbnail || book?.image || book?.cover || book?.cover_url
   const cover = getPopupImageUrl(coverPath)
-  const category = book?.category_name || book?.category?.name
+  const category = categoryLabel || book?.category_name || book?.category?.name
   const href = `/books/${book?.id}`
 
   return (
@@ -126,7 +126,7 @@ export default function BookCard({ book, className }) {
               <span className="text-[10px] text-stone-300
                                group-hover:text-orange-400
                                transition-colors duration-300">
-                ● کتێب
+                {category ? `● ${category}` : ' '}
               </span>
               <span className="text-[10px] text-stone-300
                                opacity-0 -translate-x-2

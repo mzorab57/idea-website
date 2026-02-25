@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
-import { getBooks, getSettings } from '../services/public'
+import { getBooks, getCategories, getSettings } from '../services/public'
 import Seo from '../seo/Seo.jsx'
 import BookCard from '../components/books/BookCard.jsx'
 import { Link } from 'react-router-dom'
@@ -32,7 +32,6 @@ const SLIDES = [
   {
     id: 3,
      image: "https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?auto=format&fit=crop&q=80",
-      title: "کەشێکی ئارام",
     title: 'پێکەوە فێربین',
     subtitle: 'ئەرشیفێکی گشتی بۆ لێکۆڵینەوە و بیرۆکەکان',
   },
@@ -49,7 +48,7 @@ const SECTIONS = [
   {
     key: 'books',
     name: 'کتێب',
-    slug: 'kteb',            // ← سلاگی ڕاستەقینە لێرە دابنێ
+    slug: 'book',
     description: 'نوێترین کتێبەکان',
     icon: BookOpen,
     gradient: 'from-orange-500 to-amber-500',
@@ -65,7 +64,7 @@ const SECTIONS = [
   {
     key: 'magazines',
     name: 'گۆڤارەکان',
-    slug: 'govar',
+    slug: 'magazine',
     description: 'گۆڤاری نوێ و بڵاوکراوەکان',
     icon: Newspaper,
     gradient: 'from-sky-500 to-cyan-500',
@@ -81,7 +80,7 @@ const SECTIONS = [
   {
     key: 'infographics',
     name: 'ئینفۆگرافیک',
-    slug: 'infographic',
+    slug: 'infographics',
     description: 'زانیاری بە شێوەی وێنەیی',
     icon: BarChart3,
     gradient: 'from-emerald-500 to-teal-500',
@@ -97,7 +96,7 @@ const SECTIONS = [
   {
     key: 'forum',
     name: 'سەکۆی بازگر',
-    slug: 'sekoy-bazgr',
+    slug: 'bazgr-platform',
     description: 'وتووێژ و گفتوگۆ',
     icon: MessagesSquare,
     gradient: 'from-violet-500 to-purple-500',
@@ -117,12 +116,24 @@ const SECTIONS = [
    ═══════════════════════════════════════════════════ */
 function CategoryRow({ section }) {
   const scrollRef = useRef(null)
-  const { data, isLoading } = useQuery({
-    queryKey: ['books', section.slug],
-    queryFn: () => getBooks({ category: section.slug, per_page: 6 }),
+  const query = useQuery({
+    queryKey: ['home-featured-by-category', { category_id: section.category_id }],
+    queryFn: async () => {
+      const categoryId = section.category_id
+      if (!categoryId) return []
+      const featured = []
+      for (let page = 1; page <= 5 && featured.length < 6; page += 1) {
+        const res = await getBooks({ category_id: categoryId, page })
+        const items = res?.data || []
+        featured.push(...items.filter((b) => Number(b?.is_featured) === 1))
+        if (items.length < 20) break
+      }
+      return featured.slice(0, 6)
+    },
+    enabled: !!section.category_id,
   })
-
-  const books = Array.isArray(data) ? data : data?.data || []
+  const books = query.data || []
+  const loading = query.isLoading
 
   const scroll = (dir) => {
     if (!scrollRef.current) return
@@ -175,7 +186,7 @@ function CategoryRow({ section }) {
 
             {/* see all */}
             <Link
-              to={`/books?category=${encodeURIComponent(section.slug)}`}
+              to={section.category_id ? `/books?category_id=${encodeURIComponent(section.category_id)}` : '/books'}
               className={`group flex items-center gap-x-1 text-[12px]
                          font-semibold ${section.linkColor} transition-colors mr-2`}
             >
@@ -186,7 +197,7 @@ function CategoryRow({ section }) {
         </div>
 
         {/* ── Books Row ── */}
-        {isLoading ? (
+        {loading ? (
           <div className="flex gap-4 overflow-hidden">
             {Array.from({ length: 5 }).map((_, i) => (
               <div key={i} className="shrink-0 w-[220px] animate-pulse">
@@ -206,7 +217,7 @@ function CategoryRow({ section }) {
           >
             {books.map((b) => (
               <div key={b.id} className="shrink-0 w-[220px] snap-start">
-                <BookCard book={b} />
+                <BookCard book={b} categoryLabel={section.name} />
               </div>
             ))}
           </div>
@@ -230,11 +241,13 @@ function CategoryRow({ section }) {
    ═══════════════════════════════════════════════════ */
 export default function Home() {
   const settings = useQuery({ queryKey: ['settings'], queryFn: getSettings })
+  const categories = useQuery({ queryKey: ['categories'], queryFn: getCategories })
   const [current, setCurrent] = useState(0)
   const [paused, setPaused] = useState(false)
 
   const siteName = settings.data?.site_name || 'Idea Foundation'
   const tagline = settings.data?.tagline || 'کتێبخانەیەکی دیجیتاڵی ئازاد'
+  const cats = categories.data || []
 
   /* ── auto‑play ── */
   useEffect(() => {
@@ -383,10 +396,14 @@ export default function Home() {
                 <a
                   key={s.key}
                   href={`#${s.key}`}
+                  scrollIntoView={{
+                    block: 'start',
+                    behavior: 'smooth',
+                  }}
                   className="group flex items-center gap-x-2 whitespace-nowrap
                              pl-4 py-3.5 border-b-2 border-transparent
-                             text-[13px] font-medium text-stone-400
-                             hover:text-stone-700 hover:border-stone-300
+                             text-[13px] font-medium text-stone-500
+                             hover:text-stone-900 hover:border-orange-400
                              transition-all duration-200"
                 >
                   <div className={`flex h-7 w-7 items-center justify-center rounded-lg
@@ -405,11 +422,17 @@ export default function Home() {
       {/* ═════════════════════════════════════
           4 SECTIONS
       ═════════════════════════════════════ */}
-      {SECTIONS.map((section) => (
+      {SECTIONS.map((section) => {
+        const match =
+          cats.find((c) => String(c?.name || '').trim() === section.name) ||
+          cats.find((c) => String(c?.slug || '').toLowerCase() === String(section.slug || '').toLowerCase())
+        const withId = { ...section, category_id: match?.id || null }
+        return (
         <div key={section.key} id={section.key}>
-          <CategoryRow section={section} />
+          <CategoryRow section={withId} />
         </div>
-      ))}
+        )
+      })}
 
       {/* ═════════════════════════════════════
           BOTTOM CTA

@@ -49,7 +49,7 @@ export default function Navbar() {
   }, {})
 
   return (
-    <header className="sticky top-0 z-40 border-b border-[#d97706] bg-[#0f172a]">
+    <header  className="sticky top-0 z-40 border-b border-[#d97706] bg-[#0f172a]">
       <div className="mx-auto max-w-7xl px-6">
         <div className="flex h-20 items-center justify-between">
           <Link to="/" className="font-serif text-2xl tracking-tight text-white">

@@ -9,6 +9,7 @@ import Author from './pages/Author.jsx'
 import Search from './pages/Search.jsx'
 import About from './pages/About.jsx'
 import CategoryStrip from './components/layout/CategoryStrip.jsx'
+import { useState } from 'react'
 
 function NotFound() {
   return (
@@ -22,12 +23,13 @@ function NotFound() {
 }
 
 export default function App() {
+  const [activeId, setActiveId] = useState(null)
   return (
     <BrowserRouter>
-      <div className="min-h-screen bg-white flex flex-col">
-        <Header />
-        <CategoryStrip />
-        <main className="flex-1">
+      <div  className="min-h-screen bg-white flex flex-col">
+        <Header setActiveId={setActiveId} />
+        <CategoryStrip activeId={activeId} setActiveId={setActiveId} />
+        <main onMouseMove={() => setActiveId(null)} className="flex-1">
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/books" element={<Books />} />
