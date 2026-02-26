@@ -82,7 +82,7 @@ export default function CategoryStrip() {
                             </h3>
                             <button 
                                 onClick={() => navigate(`/books?category_id=${encodeURIComponent(activeCategory?.id)}`)}
-                                className="text-xs font-medium text-orange-500 hover:border-orange-500 transition-colors bg-white px-3 py-1.5 rounded-lg border border-slate-100 shadow-sm"
+                                className="text-xs  text-orange-500 hover:border-orange-500 transition-colors bg-white px-3 py-1.5 rounded-lg border border-slate-100 shadow-sm"
                             >
                                 بینینی هەموو کتێبەکان
                             </button>

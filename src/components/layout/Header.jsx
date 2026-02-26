@@ -88,7 +88,7 @@ export default function Header({setActiveId}) {
           </div>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center gap-x-1 font-medium text-slate-600">
+          <nav className="hidden md:flex items-center gap-x-1  text-slate-600">
             {[
               { to: '/', label: 'سەرەکی' },
               { to: '/author', label: 'نووسەرەکان' },
