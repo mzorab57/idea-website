@@ -2,8 +2,8 @@ import { useEffect, useState, useRef } from 'react'
 import { Link, useNavigate,  } from 'react-router-dom'
 import CategoryMenu from './CategoryMenu.jsx'
 import MobileMenu from './MobileMenu.jsx'
-import { Facebook, Instagram, Twitter, Search as SearchIcon, Menu, ShoppingBag, X } from 'lucide-react'
-import CategoryStrip from './CategoryStrip.jsx'
+import { Facebook, Instagram, Twitter, Search as SearchIcon, Menu, ShoppingBag, X, Youtube, Send } from 'lucide-react'
+
 
 export default function Header({setActiveId}) {
   const [scrolled, setScrolled] = useState(false)
@@ -77,12 +77,13 @@ export default function Header({setActiveId}) {
             </button>
 
             <Link dir="ltr" to="/" className="flex items-center gap-x-2 group">
-              <div className="flex items-center justify-center rounded-xl text-white shadow-lg shadow-orange-200 group-hover:scale-105 transition-transform duration-300">
+              <div className="flex items-center justify-center rounded-3xl text-white shadow-lg shadow-orange-200 group-hover:scale-105 transition-transform duration-300">
                 <img src="/logo.jpeg" alt="Idea Foundation" className="size-14 rounded-full" />
               </div>
               <div className="flex flex-col place-self-end">
-                <span className="text-sm font-bold text-slate-800 pb-1 tracking-wide">IDEA</span>
-                <span className="text-sm font-bold text-slate-800 pb-1 tracking-wide">FOUNDATION</span>
+                <span className="text-sm font-semibold text-orange-400  ">IDEA</span>
+                <span className="text-sm font-semibold text-slate-800  tracking-wide">FOUNDATION</span>
+                <span className="text-sm  text-orange-300  tracking-wide"> دەزگای ئایدیا</span>
               </div>
             </Link>
           </div>
@@ -105,6 +106,7 @@ export default function Header({setActiveId}) {
                 </button>
               ) : (
                 <Link
+                onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
                   key={idx}
                   to={item.to}
                   onMouseEnter={() => setMegaOpen(false)}
@@ -204,8 +206,10 @@ export default function Header({setActiveId}) {
 
             <div className="h-6 w-px bg-slate-200 mx-1" />
 
-            <div className="flex items-center gap-x-2 text-slate-500">
+            <div className="flex items-center  text-slate-500">
               {[
+                { icon: Youtube, href: 'https://youtube.com/@ideamagazine2147?si=i0z3doZRK8Fmawqd' },
+                { icon: Send, href: 'https://t.me/idea2004' },
                 { icon: Facebook, href: 'https://www.facebook.com/share/14Y7dNWgcMY/' },
                 { icon: Instagram, href: 'https://www.instagram.com/idea__foundation?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==' },
                 // { icon: Twitter, href: 'https://twitter.com' },

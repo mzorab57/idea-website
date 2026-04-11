@@ -61,7 +61,57 @@ const SECTIONS = [
     linkColor: 'text-orange-600 hover:text-orange-700',
     sectionBg: 'bg-white',
   },
+ 
   {
+    key: 'Terms',
+    name: 'چەمکەکان',
+    slug: 'Terms',
+    description: 'نوێترین چەمکەکان',
+    icon: BarChart3,
+    gradient: 'from-emerald-500 to-teal-500',
+    light: 'bg-emerald-50',
+    iconBg: 'bg-emerald-100',
+    iconColor: 'text-emerald-600',
+    border: 'border-emerald-200',
+    hoverBorder: 'hover:border-emerald-300',
+    dot: 'bg-emerald-400',
+    linkColor: 'text-emerald-600 hover:text-emerald-700',
+    sectionBg: 'bg-white',
+  },
+   {
+    key: 'literature booklet',
+    name: 'نامیلکەی ئەدەبی',
+    slug: 'literature booklet',
+    description: 'نوێترین نامیلکەی ئەدەبی',        
+    icon: BookOpen,
+    gradient: 'from-orange-500 to-amber-500',
+    light: 'bg-orange-50',
+    iconBg: 'bg-orange-100',
+    iconColor: 'text-orange-600',
+    border: 'border-orange-200',
+    hoverBorder: 'hover:border-orange-300',
+    dot: 'bg-orange-400',
+    linkColor: 'text-orange-600 hover:text-orange-700',
+    sectionBg: 'bg-white',
+  },
+  {
+    key: 'Philosophical Boklets',
+    name: 'نامیلکەی فەلسەفی ',
+    slug: 'Philosophical Boklets',
+    description: 'نوێترین نامیلکەی فەلسەفی',        
+    icon: BarChart3,
+    gradient: 'from-emerald-500 to-teal-500',
+    light: 'bg-emerald-50',
+    iconBg: 'bg-emerald-100',
+    iconColor: 'text-emerald-600',
+    border: 'border-emerald-200',
+    hoverBorder: 'hover:border-emerald-300',
+    dot: 'bg-emerald-400',
+    linkColor: 'text-emerald-600 hover:text-emerald-700',
+    sectionBg: 'bg-white',
+  },
+  
+   {
     key: 'magazines',
     name: 'گۆڤارەکان',
     slug: 'magazine',
@@ -76,22 +126,6 @@ const SECTIONS = [
     dot: 'bg-sky-400',
     linkColor: 'text-sky-600 hover:text-sky-700',
     sectionBg: 'bg-[#fafaf9]',
-  },
-  {
-    key: 'infographics',
-    name: 'ئینفۆگرافیک',
-    slug: 'infographics',
-    description: 'زانیاری بە شێوەی وێنەیی',
-    icon: BarChart3,
-    gradient: 'from-emerald-500 to-teal-500',
-    light: 'bg-emerald-50',
-    iconBg: 'bg-emerald-100',
-    iconColor: 'text-emerald-600',
-    border: 'border-emerald-200',
-    hoverBorder: 'hover:border-emerald-300',
-    dot: 'bg-emerald-400',
-    linkColor: 'text-emerald-600 hover:text-emerald-700',
-    sectionBg: 'bg-white',
   },
   {
     key: 'forum',
@@ -148,17 +182,17 @@ function CategoryRow({ section }) {
 
   return (
     <section className={section.sectionBg}>
-      <div className="mx-auto max-w-6xl px-4 sm:px-6 py-14">
+      <div className="mx-auto max-w-7xl px-4  py-14">
         {/* ── Header ── */}
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center gap-x-4">
             {/* icon with gradient */}
-            <div className={`flex h-11 w-11 items-center justify-center rounded-2xl
+            {/* <div className={`flex h-11 w-11 items-center justify-center rounded-2xl
                             bg-gradient-to-br ${section.gradient} shadow-lg shadow-${section.key}/20`}>
               <Icon size={20} className="text-white" />
-            </div>
+            </div> */}
             <div>
-              <h2 className="text-xl font-bold text-stone-900">{section.name}</h2>
+              <h2 className="text-2xl text-center font-bold text-stone-900">{section.name}</h2>
               <p className="text-[12px] text-stone-400 mt-0.5">{section.description}</p>
             </div>
           </div>
@@ -390,7 +424,7 @@ export default function Home() {
           <div className="flex items-center gap-x-1 overflow-x-auto
                           scrollbar-thin scrollbar-thumb-stone-100
                           scrollbar-track-transparent -mb-px">
-            {SECTIONS.map((s) => {
+            {SECTIONS.filter((s) => s.key !== 'literature booklet' && s.key !== 'Philosophical Boklets' && s.key !== 'Terms').map((s) => {
               const Icon = s.icon
               return (
                 <a
@@ -434,44 +468,7 @@ export default function Home() {
         )
       })}
 
-      {/* ═════════════════════════════════════
-          BOTTOM CTA
-      ═════════════════════════════════════ */}
-      <section className="bg-white">
-        <div className="mx-auto max-w-6xl px-4 sm:px-6 py-20 text-center">
-          <div className="mx-auto mb-5 flex h-14 w-14 items-center justify-center
-                          rounded-2xl bg-gradient-to-br from-orange-400 to-amber-500
-                          shadow-lg shadow-orange-200/50">
-            <BookOpen size={24} className="text-white" />
-          </div>
-          <h2 className="font-serif text-2xl sm:text-3xl font-bold text-stone-900">
-            ئامادەیت بۆ خوێندنەوە؟
-          </h2>
-          <p className="mt-3 text-stone-400 max-w-md mx-auto text-[14px] leading-relaxed">
-            بە سەدان کتێب و بڵاوکراوە لە بوارە جیاوازەکاندا ئامادەن
-          </p>
-          <div className="mt-8 flex items-center justify-center gap-3">
-            <Link
-              to="/books"
-              className="rounded-2xl bg-stone-900 px-8 py-3.5
-                         text-[13px] font-semibold text-white
-                         hover:bg-stone-800 active:scale-[0.98]
-                         transition-all duration-200"
-            >
-              هەموو کتێبەکان
-            </Link>
-            <Link
-              to="/about"
-              className="rounded-2xl border-2 border-stone-200
-                         px-8 py-3.5 text-[13px] font-semibold text-stone-600
-                         hover:border-stone-300 hover:text-stone-900
-                         transition-all duration-200"
-            >
-              دەربارەی ئێمە
-            </Link>
-          </div>
-        </div>
-      </section>
+    
     </div>
   )
 }

@@ -3,6 +3,7 @@ import { getBooks, getAuthors } from '../services/public'
 import BookCard from '../components/books/BookCard.jsx'
 import useQueryParam, { useQueryParams } from '../hooks/useQueryParam'
 import Seo from '../seo/Seo.jsx'
+import { Link } from 'react-router-dom'
 import {
   Search,
   SlidersHorizontal,
@@ -13,6 +14,10 @@ import {
   Layers,
   User,
   Grid3X3,
+  Facebook,
+  Send,
+  Youtube,
+  AtSign,
 } from 'lucide-react'
 import { useState, useMemo } from 'react'
 import useCategories from '../hooks/useCategories'
@@ -23,7 +28,7 @@ export default function Books() {
   const [legacySearch, setLegacySearch] = useQueryParam('search', '')
 
   const page = Number(params.page || 1)
-  const per_page = Number(params.per_page || 12)
+  const per_page = Number(params.per_page || 21)
   const category_id = params.category_id || ''
   const subcategory_id = params.subcategory_id || ''
   const author_id = params.author_id || ''
@@ -43,10 +48,31 @@ export default function Books() {
     queryFn: () =>
       getBooks({ page, per_page, category_id, subcategory_id, author_id, q: effectiveQ }),
   })
-
-  const totalPages = Number(books.data?.meta?.total_pages || 10)
   const bookList = books.data?.data || []
+  const apiTotalPages = Number(
+    books.data?.meta?.total_pages || books.data?.meta?.pages || 0
+  )
+  const totalPages = Math.max(1, apiTotalPages || 1)
   const totalBooks = books.data?.meta?.total || bookList.length
+  const nextPageQuery = useQuery({
+    queryKey: ['books-next-page', { page, per_page, category_id, subcategory_id, author_id, q: effectiveQ }],
+    queryFn: () =>
+      getBooks({ page: page + 1, per_page, category_id, subcategory_id, author_id, q: effectiveQ }),
+    enabled: apiTotalPages <= 0 && bookList.length > 0,
+  })
+  const hasNextPage =
+    apiTotalPages > 0
+      ? page < totalPages
+      : (nextPageQuery.data?.data?.length || 0) > 0
+  const visiblePages =
+    apiTotalPages > 0
+      ? Array.from({ length: Math.min(totalPages, 7) }).map((_, i) => {
+          if (totalPages <= 7) return i + 1
+          if (page <= 4) return i + 1
+          if (page >= totalPages - 3) return totalPages - 6 + i
+          return page - 3 + i
+        })
+      : [page > 1 ? page - 1 : null, page, hasNextPage ? page + 1 : null].filter(Boolean)
 
   /* active filters count */
   const activeFilters = useMemo(() => {
@@ -84,6 +110,15 @@ export default function Books() {
     return ''
   }, [subcategory_id, categories])
 
+  const isBazgarPlatform = String(category_id) === '18'
+  const bazgarLinks = [
+    { icon: Facebook, href: 'https://www.facebook.com/share/1J1qfPXby8/', label: 'فەیسبووک ١' },
+    { icon: Facebook, href: 'https://www.facebook.com/share/17FLg5qnW4/', label: 'فەیسبووک ٢' },
+    // { icon: AtSign, href: 'https://t.me/anwarhussen', label: '@Anwarhussen' },
+    { icon: Send, href: 'https://t.me/anwarhussen', label: 'تێلەگرام' },
+    { icon: Youtube, href: 'https://youtube.com/@anwarhussenbazgr3556?si=l6BeDVq_l86HPF6I', label: 'یوتیوب' },
+  ]
+
   return (
     <div dir="rtl" className="min-h-screen bg-[#fafaf9]">
       <Seo title="کتێبەکان • Idea Foundation" />
@@ -106,18 +141,47 @@ export default function Books() {
               <p className="text-[13px] text-stone-400">
                 {books.isLoading
                   ? 'چاوەڕوان بە...'
-                  : `${totalBooks} کتێب دۆزرایەوە`}
+                  : `${totalBooks}  بەرهەم دۆزرایەوە لە`}
                 {activeCatName && (
                   <span className="text-stone-500">
-                    {' '}لە <span className="font-semibold text-orange-600">{activeCatName}</span>
+                    {' '} <span className="font-semibold text-orange-400">{activeCatName}</span>
                   </span>
                 )}
                 {activeSubName && (
                   <span className="text-stone-500">
-                    {' '}› <span className="font-semibold text-orange-600">{activeSubName}</span>
+                    {' '}/ <span className="font-semibold text-orange-400">{activeSubName}</span>
                   </span>
                 )}
               </p>
+             {isBazgarPlatform && (
+  <div className="mt-3 flex flex-wrap items-center gap-2.5">
+    {/* Label */}
+    <div className="inline-flex items-center gap-1.5 rounded-full border border-stone-200/80 bg-white px-2.5 py-1 shadow-sm">
+      <span className="h-1.5 w-1.5 rounded-full bg-orange-500" />
+      <span className="text-[11px] font-medium text-stone-600">سۆشیال میدیا (بازگر) </span>
+    </div>
+
+    {/* Icons */}
+    <div className="flex items-center gap-1.5">
+      {bazgarLinks.map((item) => {
+        const Icon = item.icon
+        return (
+          <a
+            key={item.href + item.label}
+            href={item.href}
+            target="_blank"
+            rel="noreferrer"
+            title={item.label}
+            aria-label={item.label}
+            className="group flex h-8 w-8 items-center justify-center rounded-lg border border-stone-200 bg-stone-50/70 text-stone-500 backdrop-blur transition-all hover:-translate-y-0.5 hover:border-orange-300 hover:bg-orange-50 hover:text-orange-600"
+          >
+            <Icon size={15} className="transition-transform group-hover:scale-110" />
+          </a>
+        )
+      })}
+    </div>
+  </div>
+)}
             </div>
 
             {/* search bar — desktop */}
@@ -161,7 +225,7 @@ export default function Books() {
           </div>
 
           {/* active filter tags */}
-          {activeFilters > 0 && (
+          {/* {activeFilters > 0 && (
             <div className="flex items-center gap-2 mt-4 flex-wrap">
               <span className="text-[11px] text-stone-400">فلتەرەکان:</span>
 
@@ -208,7 +272,13 @@ export default function Books() {
                                  bg-sky-50 border border-sky-200
                                  px-3 py-1 text-[11px] font-medium text-sky-700">
                   <User size={10} />
-                  {(authors || []).find((a) => String(a.id) === String(author_id))?.name || 'نووسەر'}
+                  <Link
+                  onClick={() => windowTop.scrollTo({ top: 0, behavior: 'smooth' })}
+                    to={`/author/${author_id}`}
+                    className="hover:underline"
+                  >
+                    {(authors || []).find((a) => String(a.id) === String(author_id))?.name || 'نووسەر'}
+                  </Link>
                   <button onClick={() => setParams({ author_id: '', page: 1 })}>
                     <X size={11} />
                   </button>
@@ -223,7 +293,7 @@ export default function Books() {
                 پاککردنەوەی هەمووی
               </button>
             </div>
-          )}
+          )} */}
         </div>
       </div>
 
@@ -440,9 +510,9 @@ export default function Books() {
                   {(authors || []).map((a) => {
                     const isActive = String(author_id) === String(a.id)
                     return (
-                      <button
+                      <Link
                         key={a.id}
-                        onClick={() => setParams({ author_id: a.id, page: 1 })}
+                        to={`/author/${a.id}`}
                         className={[
                           'flex items-center gap-x-2.5 w-full px-4 py-2.5',
                           'text-right border-b border-stone-50 last:border-0',
@@ -452,7 +522,6 @@ export default function Books() {
                             : 'text-stone-500 hover:bg-stone-50 hover:text-stone-700',
                         ].join(' ')}
                       >
-                        {/* avatar */}
                         <div className={[
                           'flex h-7 w-7 shrink-0 items-center justify-center',
                           'rounded-full text-[10px] font-bold',
@@ -468,7 +537,7 @@ export default function Books() {
                         {isActive && (
                           <div className="h-1.5 w-1.5 rounded-full bg-sky-400" />
                         )}
-                      </button>
+                      </Link>
                     )
                   })}
                 </div>
@@ -480,7 +549,7 @@ export default function Books() {
           <section className="lg:col-span-3">
 
             {/* results bar */}
-            <div className="flex items-center justify-between mb-6">
+            {/* <div className="flex items-center justify-between mb-6">
               <p className="text-[12px] text-stone-400">
                 {books.isLoading ? (
                   <span className="animate-pulse">چاوەڕوان بە...</span>
@@ -492,12 +561,12 @@ export default function Books() {
                   </>
                 )}
               </p>
-            </div>
+            </div> */}
 
             {/* loading */}
             {books.isLoading && (
               // CHANGED: Added grid-cols-2 for mobile
-              <div className="grid grid-cols-2 gap-3 sm:gap-5 sm:grid-cols-2 xl:grid-cols-3">
+              <div className="grid grid-cols-2 gap-3 sm:gap-5  xl:grid-cols-3">
                 {Array.from({ length: 6 }).map((_, i) => (
                   <div key={i} className="animate-pulse rounded-2xl bg-white
                                           border border-stone-100 overflow-hidden">
@@ -565,43 +634,33 @@ export default function Books() {
                 )}
 
                 {/* pagination */}
-                {bookList.length > 0 && totalPages > 1 && (
+                {bookList.length > 0 && (apiTotalPages > 1 || (apiTotalPages <= 0 && (page > 1 || hasNextPage))) && (
                   <div className="mt-10 flex justify-center">
                     <div className="inline-flex items-center gap-x-1 rounded-2xl
                                     bg-white border border-stone-100 p-1.5 shadow-sm">
                       <button
+
                         disabled={page <= 1}
-                        onClick={() => setParams({ page: page - 1 })}
+                        onClick={() => {setParams({ page: page - 1 }); window.scrollTo({ top: 0 })}}
                         className="flex h-9 w-9 items-center justify-center rounded-xl
                                    text-stone-400 hover:bg-stone-50 hover:text-stone-700
                                    disabled:opacity-30 disabled:cursor-not-allowed
                                    transition-all"
                       >
-                        <ChevronLeft size={16} className="rotate-180" />
+                        <ChevronLeft size={16} className="rotate-180 text-orange-400" />
                       </button>
 
-                      {Array.from({ length: Math.min(totalPages, 7) }).map((_, i) => {
-                        let p
-                        if (totalPages <= 7) {
-                          p = i + 1
-                        } else if (page <= 4) {
-                          p = i + 1
-                        } else if (page >= totalPages - 3) {
-                          p = totalPages - 6 + i
-                        } else {
-                          p = page - 3 + i
-                        }
-
+                      {visiblePages.map((p) => {
                         return (
                           <button
                             key={p}
-                            onClick={() => setParams({ page: p })}
+                            onClick={() => {setParams({ page: p }); window.scrollTo({ top: 0 })}}
                             className={[
                               'flex h-9 w-9 items-center justify-center rounded-xl',
                               'text-[13px] font-medium transition-all',
                               p === page
-                                ? 'bg-stone-900 text-white shadow-sm'
-                                : 'text-stone-500 hover:bg-stone-50',
+                                ? 'bg-orange-600 text-white shadow-sm'
+                                : 'text-orange-500 hover:bg-orange-50',
                             ].join(' ')}
                           >
                             {p}
@@ -610,14 +669,14 @@ export default function Books() {
                       })}
 
                       <button
-                        disabled={page >= totalPages}
-                        onClick={() => setParams({ page: page + 1 })}
+                        disabled={!hasNextPage}
+                        onClick={() => {setParams({ page: page + 1 }); window.scrollTo({ top: 0 })}}
                         className="flex h-9 w-9 items-center justify-center rounded-xl
                                    text-stone-400 hover:bg-stone-50 hover:text-stone-700
                                    disabled:opacity-30 disabled:cursor-not-allowed
                                    transition-all"
                       >
-                        <ChevronLeft size={16} />
+                        <ChevronLeft size={16} className='text-orange-400' />
                       </button>
                     </div>
                   </div>

@@ -1,11 +1,10 @@
-import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import useCategories from '../../hooks/useCategories'
 import { Sparkles, CornerDownLeft, ArrowLeft } from 'lucide-react'
 
-export default function CategoryStrip() {
+export default function CategoryStrip({activeId, setActiveId}) {
   const { data: categories = [] } = useCategories() || {}
-  const [activeId, setActiveId] = useState(null)
+
   
   const navigate = useNavigate()
 
@@ -14,20 +13,20 @@ export default function CategoryStrip() {
 
   return (
     <div className="relative hidden md:block z-30 my-6 " dir="rtl">
-      <div className="mx-auto max-w-7xl px-4">
+      <div className="mx-auto w-full max-w-[1300px] px-4">
         
         {/* 1. Main Floating Bar */}
-        <div className="relative flex items-center justify-center">
+        <div className="relative flex items-center max-w-[1300px] justify-center w-full">
             {/* Background Blur Bar */}
             <div className="absolute inset-0 bg-white/60 backdrop-blur-xl rounded-full shadow-sm border border-orange-300/50 "></div>
             
             {/* Scrollable Categories */}
-            <div className="relative flex items-center gap-x-2 overflow-x-auto py-3 px-12 scrollbar-hide mask-fade-edges max-w-full">
+            <div className="relative flex justify-center items-center lg:gap-x-4 gap-x-2 w-full overflow-x-auto py-3 px-3 scrollbar-hide mask-fade-edges max-w-full">
                 
                 {/* Decorative Icon */}
-                <div className="pl-3 ml-2 border-l border-orange-100/50 flex items-center gap-2 text-orange-400">
+                {/* <div className="pl-3 ml-2 border-l border-orange-100/50 flex items-center gap-2 text-orange-400">
                     <Sparkles size={18} className="animate-pulse" />
-                </div>
+                </div> */}
 
                 {categories.map((c) => {
                     const isActive = activeId === c.id
@@ -38,10 +37,10 @@ export default function CategoryStrip() {
                             onFocus={() => setActiveId(c.id)}
                             onClick={() => navigate(`/books?category_id=${encodeURIComponent(c.id)}`)}
                             className={`
-                                group relative whitespace-nowrap rounded-full px-6 py-2.5 text-sm font-bold transition-all duration-500 ease-out
+                                group relative  rounded-xl px-1 py-2 text-sm font-bold transition-all duration-500 ease-out
                                 ${isActive 
                                     ? 'bg-gradient-to-tr from-orange-500 to-orange-400 text-white shadow-lg shadow-orange-500/30 -translate-y-1' 
-                                    : 'bg-transparent text-slate-500 hover:bg-white hover:text-orange-600 hover:shadow-md'
+                                    : 'bg-transparent text-orange-400 hover:bg-white hover:text-orange-600 hover:shadow-md'
                                 }
                             `}
                         >
@@ -56,6 +55,7 @@ export default function CategoryStrip() {
             </div>
         </div>
 
+{/* ************************************************************************************* */}
         {/* 2. The Floating Cloud Panel (Subcategories) */}
         <div 
             className={`
@@ -66,10 +66,10 @@ export default function CategoryStrip() {
            
         >
             <div className="mx-auto p-4  max-w-7xl">
-                <div className="relative overflow-hidden border border-orange-400 rounded-xl bg-white/40 backdrop-blur-3xl shadow-[0_20px_50px_-12px_rgba(249,115,22,0.15)]  ring-orange-50">
+                <div className="relative overflow-hidden border border-orange-400 rounded-xl bg-white shadow-[0_20px_50px_-12px_rgba(249,115,22,0.15)]  ring-orange-50">
                     
                     {/* Decorative Top Gradient Line */}
-                    <div className="absolute top-0 border-b border-orange-600/50 inset-x-0 h-1 bg-gradient-to-r from-transparent via-orange-400 to-transparent opacity-60"></div>
+                    <div className="absolute top-0 border-b border-orange-600/50 inset-x-0 h-1 bg-orange-400  opacity-60"></div>
 
                     <div className="p-8">
                         {/* Header of Panel */}
@@ -89,25 +89,26 @@ export default function CategoryStrip() {
                         </div>
 
                         {/* Grid of Subcategories */}
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <div className="grid grid-cols-2 md:grid-cols-5  gap-4">
                             {(activeSubs || []).map((s, idx) => (
                                 <button
                                     key={s.id}
                                     onClick={() => navigate(`/books?category_id=${encodeURIComponent(activeCategory?.id)}&subcategory_id=${encodeURIComponent(s.id)}`)}
                                     style={{ transitionDelay: `${idx * 40}ms` }}
                                     className={`
-                                        group flex items-center justify-between p-3 rounded-lg border  
-                                        hover:bg-slate-50/50 bg-white/80 border-orange-200 hover:shadow-lg hover:shadow-orange-500/5 
-                                        transition-all duration-300 transform hover:-translate-y-1
-                                        ${activeId ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'}
+                                        group  p-3 rounded-lg border text-center  
+                                          border-orange-300 
+                                          bg-orange-50 hover:bg-white
+                                        
                                     `}
                                 >
-                                    <span className="text-sm font-medium group-hover:text-slate-600 text-orange-600 transition-colors">
-                                        {s.name}
+                                    <span className="text-sm  text-center flex items-center justify-center font-medium group-hover:text-slate-600 text-orange-500 ">
+                                        {s.name} 
                                     </span>
-                                    <span className="h-6 w-6 rounded-full bg-white flex items-center justify-center text-orange-300 opacity-0 group-hover:opacity-100 transition-all shadow-sm">
-                                        <ArrowLeft size={12} />
-                                    </span>
+                                          {/* <span className="rounded-full inline-flex opacity-0  text-orange-300  group-hover:opacity-100  shadow-sm">
+                                        <ArrowLeft size={17} />
+                                    </span> */}
+                                 
                                 </button>
                             ))}
                         </div>

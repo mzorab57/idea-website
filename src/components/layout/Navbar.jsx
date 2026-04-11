@@ -119,7 +119,7 @@ export default function Navbar() {
                     onClick={() => navigate(`/books?subcategory=${encodeURIComponent(s.slug || s.name)}`)}
                     className="rounded-md border border-[#d97706]/40 px-3 py-2 text-left text-slate-100 hover:bg-slate-800"
                   >
-                    <div className="font-serif">{s.name}</div>
+                    <div className="font-serif ">{s.name}</div>
                     {s.count ? <div className="text-xs text-slate-400">{s.count} books</div> : null}
                   </button>
                 ))}

@@ -20,6 +20,10 @@ export default function BookCard({ book, className, categoryLabel }) {
           .join('، ')
       : book?.author) ||
     ''
+  const primaryAuthorObj =
+    Array.isArray(book?.authors) &&
+    book.authors.find((a) => typeof a === 'object' && (String(a?.role || '').toLowerCase() === 'author' || !a?.role) && a?.id)
+  const authorId = book?.author?.id || primaryAuthorObj?.id
   const coverPath = book?.thumbnail || book?.image || book?.cover || book?.cover_url
   const cover = getPopupImageUrl(coverPath)
   const category = categoryLabel || book?.category_name || book?.category?.name
@@ -29,29 +33,28 @@ export default function BookCard({ book, className, categoryLabel }) {
     <div
       dir="rtl"
       className={cn(
-        'group relative rounded-2xl bg-white border border-stone-100',
+        'group relative bg-white border border-stone-100 flex flex-col h-full', // flex flex-col h-full زیادکراوە بۆ یەک قەبارەیی
         'transition-all duration-300',
         'hover:border-stone-200',
         'hover:shadow-[0_8px_30px_rgba(0,0,0,0.04)]',
         className
       )}
     >
-      <Link to={href} className="block">
-
+      <Link onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} to={href} className="block">
         {/* ── Cover ── */}
-        <div className="relative overflow-hidden rounded-t-2xl bg-stone-100">
-
+        {/* aspect-[2/3] و p-2 زیادکراوە بۆ ئەوەی جێگەی وێنەکە دیاریکراو بێت */}
+        <div className="relative overflow-hidden bg-stone-50 aspect-[2/3] flex items-center justify-center p-2">
+          
           {/* image */}
+          {/* object-contain زیادکراوە لەبری object-cover بۆ ئەوەی نەقرتێت */}
           <img
             src={cover}
             alt={title}
             onError={(e) => {
               e.currentTarget.onerror = null
-              e.currentTarget.src = placeholder(400, 600)
+              e.currentTarget.src = placeholder()
             }}
-            style={{ aspectRatio: '2 / 3' }}
-            className="w-full object-cover transition-transform duration-500 ease-out
-                       group-hover:scale-[1.03]"
+            className="w-full h-full object-contain transition-transform duration-500 ease-out group-hover:scale-[1.03]"
             loading="lazy"
           />
 
@@ -67,7 +70,7 @@ export default function BookCard({ book, className, categoryLabel }) {
               <span className="inline-flex items-center gap-x-1 rounded-full
                                bg-white/90 backdrop-blur-sm
                                border border-white/60
-                               px-2.5 py-1 text-[10px] font-semibold text-stone-700
+                               px-2.5 py-1 text-[10px] text-stone-700
                                shadow-sm">
                 <Layers size={9} className="text-orange-400" />
                 {category}
@@ -82,63 +85,67 @@ export default function BookCard({ book, className, categoryLabel }) {
                           transition-all duration-300">
             <span className="flex items-center justify-center gap-x-2
                              rounded-xl bg-white/95 backdrop-blur-sm
-                             py-2.5 text-[12px] font-semibold text-stone-800
+                             py-2.5 text-[12px] text-stone-800
                              shadow-lg">
               <BookOpen size={14} className="text-orange-500" />
               خوێندنەوە
             </span>
           </div>
         </div>
-
-        {/* ── Info ── */}
-        <div className="p-4">
-          {/* title */}
-          <h3 className="text-[14px] font-semibold leading-snug text-stone-800
-                         line-clamp-2 group-hover:text-stone-900
-                         transition-colors duration-200">
-            {title}
-          </h3>
-
-          {/* author */}
-          {author && (
-            <div className="mt-2 flex items-center gap-x-1.5">
-              <div className="flex h-5 w-5 shrink-0 items-center justify-center
-                              rounded-full bg-stone-100
-                              group-hover:bg-orange-50
-                              transition-colors duration-200">
-                <User size={10} className="text-stone-400
-                                           group-hover:text-orange-500
-                                           transition-colors duration-200" />
-              </div>
-              <p className="text-[12px] text-stone-400 line-clamp-1
-                            group-hover:text-stone-500
-                            transition-colors duration-200">
-                {author}
-              </p>
-            </div>
-          )}
-
-          {/* bottom accent line */}
-          <div className="mt-3 pt-3 border-t border-stone-50
-                          group-hover:border-stone-100
-                          transition-colors duration-200">
-            <div className="flex items-center justify-between">
-              <span className="text-[10px] text-stone-300
-                               group-hover:text-orange-400
-                               transition-colors duration-300">
-                {category ? `● ${category}` : ' '}
-              </span>
-              <span className="text-[10px] text-stone-300
-                               opacity-0 -translate-x-2
-                               group-hover:opacity-100 group-hover:translate-x-0
-                               transition-all duration-300">
-                بینین →
-              </span>
-            </div>
-          </div>
-        </div>
-
       </Link>
+
+      {/* ── Info ── */}
+      {/* flex-grow زیادکراوە بۆ ئەوەی بۆشاییە بەتاڵەکان پڕبکاتەوە و درێژی کارتەکان یەکسان بن */}
+      <div className="p-4 flex flex-col flex-grow">
+        
+        {/* title */}
+        <h3 className="text-[14px] leading-snug text-stone-800
+                       line-clamp-2 group-hover:text-stone-900
+                       transition-colors duration-200">
+          {title}
+        </h3>
+
+        {/* author */}
+        {author && (
+          <div className="mt-2 flex items-center gap-x-1.5">
+            <div className="flex h-5 w-5 shrink-0 items-center justify-center
+                            rounded-full bg-stone-100
+                            group-hover:bg-orange-50
+                            transition-colors duration-200">
+              <User size={10} className="text-stone-400
+                                         group-hover:text-orange-500
+                                         transition-colors duration-200" />
+            </div>
+            <Link
+              to={authorId ? `/author/${authorId}` : author ? `/author?search=${encodeURIComponent(author)}` : '/author'}
+              className="text-[12px] text-stone-400 line-clamp-1
+                         group-hover:text-stone-500
+                         transition-colors duration-200"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {author}
+            </Link>
+          </div>
+        )}
+
+       
+        {/* mt-auto زیادکراوە بۆ ئەوەی ئەم بەشە هەمیشە بچێتە خوارەوەی کارتەکە */}
+        {/* <div className="mt-auto pt-3 group-hover:border-stone-100 transition-colors duration-200">
+          <div className="flex items-center justify-between">
+            <span className="text-[10px] text-stone-300
+                             group-hover:text-orange-400
+                             transition-colors duration-300">
+              {category ? `● ${category}` : ' '}
+            </span>
+            <span className="text-[10px] text-stone-300
+                             opacity-0 -translate-x-2
+                             group-hover:opacity-100 group-hover:translate-x-0
+                             transition-all duration-300">
+               بینین → 
+            </span>
+          </div>
+        </div> */}
+      </div>
 
       {/* bottom accent bar — grows on hover */}
       <span className="absolute bottom-0 right-4 left-4 h-[2px] rounded-full

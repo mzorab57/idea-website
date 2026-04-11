@@ -1,5 +1,5 @@
-export function placeholder(width = 400, height = 600) {
-  return `https://picsum.photos/seed/idea-${width}x${height}/${width}/${height}`
+export function placeholder() {
+  return '/logo.jpeg'
 }
 
 export function getPopupImageUrl(dbPath) {
