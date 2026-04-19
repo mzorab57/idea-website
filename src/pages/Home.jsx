@@ -4,6 +4,10 @@ import Seo from '../seo/Seo.jsx'
 import BookCard from '../components/books/BookCard.jsx'
 import { Link } from 'react-router-dom'
 import { useState, useEffect, useRef } from 'react'
+import bg1 from '../assets/images/bg1.jpeg'
+import bg2 from '../assets/images/bg2.jpeg'
+import bg3 from '../assets/images/bg3.jpeg'
+import bg4 from '../assets/images/bg4.jpeg'
 import {
   ChevronLeft,
   ChevronRight,
@@ -19,25 +23,25 @@ import {
 const SLIDES = [
   {
     id: 1,
-    image: "https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?auto=format&fit=crop&q=80",
+    image: bg1,
     title: 'بەخێربێیت بۆ Idea Foundation',
     subtitle: 'کتێبخانەیەکی دیجیتاڵی ئازاد بۆ هەموو کەس',
   },
   {
     id: 2,
-   image: "https://images.unsplash.com/photo-1481627834876-b7833e8f5570?auto=format&fit=crop&q=80",
+    image: bg2,
     title: 'زانست و زانیاری',
     subtitle: 'بە سەدان کتێب لە بوارە جیاوازەکاندا',
   },
   {
     id: 3,
-     image: "https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?auto=format&fit=crop&q=80",
+    image: bg3,
     title: 'پێکەوە فێربین',
     subtitle: 'ئەرشیفێکی گشتی بۆ لێکۆڵینەوە و بیرۆکەکان',
   },
-   {
+  {
     id: 4,
-   image: "https://images.unsplash.com/photo-1481627834876-b7833e8f5570?auto=format&fit=crop&q=80",
+    image: bg4,
     title: 'زانست و زانیاری',
     subtitle: 'بە سەدان کتێب لە بوارە جیاوازەکاندا',
   },
@@ -300,7 +304,7 @@ export default function Home() {
           CAROUSEL — h-1/3
       ═════════════════════════════════════ */}
       <section
-        className="relative max-w-7xl rounded-xl mx-auto h-[33vh] min-h-[400px] max-h-[420px] overflow-hidden bg-stone-900"
+        className="relative max-w-7xl lg:rounded-xl  mx-auto  min-h-[160px] md:min-h-[242px] lg:min-h-[400px] overflow-hidden "
         onMouseEnter={() => setPaused(true)}
         onMouseLeave={() => setPaused(false)}
       >
@@ -318,12 +322,10 @@ export default function Home() {
             <img
               src={slide.image}
               alt={slide.title}
-              className="h-full w-full object-cover"
+              className=" w-full  lg:rounded-bl-2xl lg:rounded-br-2xl lg:rounded-2xl lg:rounded-t-none  object-cover size-full    h-[10rem] sm:h-[15] md:h-[15rem] lg:h-[25rem] overflow-hidden cursor-pointer"
               loading={i === 0 ? 'eager' : 'lazy'}
             />
-            {/* overlay */}
-            <div className="absolute inset-0 bg-gradient-to-t
-                            from-black/70 via-black/30 to-transparent" />
+            
           </div>
         ))}
 
@@ -331,27 +333,14 @@ export default function Home() {
         <div className="relative z-10 h-full flex items-end">
           <div className="mx-auto w-full max-w-6xl px-4 sm:px-6 pb-8">
             <div className="max-w-lg">
-              {/* animated badge */}
-              <div className="inline-flex items-center gap-x-2 rounded-full
-                              bg-white/10 backdrop-blur-sm border border-white/20
-                              px-3 py-1 mb-3">
-                <span className="relative flex h-1.5 w-1.5">
-                  <span className="absolute inline-flex h-full w-full animate-ping
-                                   rounded-full bg-orange-400 opacity-75" />
-                  <span className="relative inline-flex h-1.5 w-1.5
-                                   rounded-full bg-orange-400" />
-                </span>
-                <span className="text-[11px] font-medium text-white/90">
-                  {siteName}
-                </span>
-              </div>
+             
 
               <h2 className="text-2xl sm:text-3xl font-bold text-white leading-tight
                              transition-all duration-500">
-                {SLIDES[current].title}
+                {/* {SLIDES[current].title} */}
               </h2>
               <p className="mt-2 text-[14px] text-white/70 leading-relaxed">
-                {SLIDES[current].subtitle}
+                {/* {SLIDES[current].subtitle} */}
               </p>
             </div>
           </div>
